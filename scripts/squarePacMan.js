@@ -4,8 +4,6 @@ const ctx = canvas.getContext("2d");
 let deltaTime = 0;
 let previousTime = 0;
 
-let image;
-
 class Collectibles {
     constructor(x = 0, y = 0, width = 25, height = 25) {
         this.x = x;
@@ -48,10 +46,10 @@ class Character {
         };
 
         this.animationData = {
-            animationSprites: [],
-            timePerSprite: 0.1,
-            currentSpriteElapsedTime: 0,
-            currentSpriteIndex: 0,
+            currentGapSize: 10,
+            maxGapSize: 30,
+            gapIncrement: 10,
+            gapIncrementMultiplier: 1,
         };
     }
 
@@ -87,25 +85,24 @@ class Character {
     }
 
     draw() {
-        ctx.drawImage(this.animationData.animationSprites[this.animationData.currentSpriteIndex], this.x, this.y, this.width, this.height);
-    }
+        let singleRectHeight = this.height / 2;
+        let halfGapSize = this.animationData.currentGapSize / 2;
+        let reducedRectHeight = singleRectHeight - halfGapSize;
+        this.animationData.currentGapSize += 
+            this.animationData.gapIncrement * this.animationData.gapIncrementMultiplier * deltaTime;
 
-    loadImages(){
-        // for (let i = 0; i < this.animationData.animationSprites.length; i++) {
+        if (this.animationData.currentGapSize >= this.animationData.maxGapSize) {
+            this.animationData.gapIncrementMultiplier *= -1;
+        }
+        else if (this.animationData.currentGapSize <= 0) {
+            this.animationData.currentGapSize = 0;
+            this.animationData.gapIncrementMultiplier *= -1;
+        }
 
-        // }
-
-        let image1 = new Image();
-        let image2 = new Image();
-        let image3 = new Image();
-
-        image1.src = "./images/PacMan0.png";
-        image2.src = "./images/PacMan1.png";
-        image3.src = "./images/PacMan2.png";
-
-        this.animationData.animationSprites.push(image1);
-        this.animationData.animationSprites.push(image2);
-        this.animationData.animationSprites.push(image3);
+        ctx.fillStyle = "#00ff00";
+        ctx.fillRect(this.x, this.y, this.width, reducedRectHeight);
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(this.x, this.y + singleRectHeight * 2, this.width, reducedRectHeight * -1);
     }
 }
 
@@ -136,15 +133,8 @@ function gameLoop(totalTime) {
 
 
     previousTime = totalTime;
-
-    packMan.animationData.currentSpriteIndex++;
-    if (packMan.animationData.currentSpriteIndex >= packMan.animationData.animationSprites.length) {
-        packMan.animationData.currentSpriteIndex = 0;
-    }
     requestAnimationFrame(gameLoop);
 }
-
-
 
 const packMan = new Character(100, 400)
 
@@ -152,7 +142,6 @@ const collectibles = [];
 
 setInterval(spawnCollectible, 2000);
 
-packMan.loadImages();
 requestAnimationFrame(gameLoop);
 
 document.addEventListener("keydown", (event) => {
