@@ -1,16 +1,8 @@
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
-let x = 100;
-let y = 400;
-let width = 80;
-let height = 80;
-let xVelocity = 0;
-let animationData = {
-    currentGapSize: 10,
-    maxGapSize: 30,
-    gapIncrement: 1,
-    gapIncrementMultiplier: 1,
-};
+
+let deltaTime = 0;
+let previousTime = 0;
 
 class Collectibles {
     constructor(x = 0, y = 0, width = 25, height = 25) {
@@ -30,8 +22,8 @@ class Collectibles {
 
     collision(character) {
         if (this.visible) {
-            if ((character.x + character.width > this.x && x < this.x + this.width) &&
-                (character.y + character.height > this.y && y < this.y + this.height)
+            if ((character.x + character.width > this.x && character.x < this.x + this.width) &&
+                (character.y + character.height > this.y && character.y < this.y + this.height)
             ) {
                 this.visible = false;
             }
@@ -48,7 +40,7 @@ class Character {
         this.height = height;
 
         this.moveData = {
-            speed: 5,
+            speed: 500,
             speedMultiplier: 1,
             direction: "right",
         };
@@ -62,7 +54,7 @@ class Character {
     }
 
     move() {
-        let distance = this.moveData.speed * this.moveData.speedMultiplier;
+        let distance = this.moveData.speed * this.moveData.speedMultiplier * deltaTime;
         switch (this.moveData.direction) {
             case "right":
                 this.x += distance;
@@ -97,7 +89,7 @@ class Character {
         let halfGapSize = this.animationData.currentGapSize / 2;
         let reducedRectHeight = singleRectHeight - halfGapSize;
         this.animationData.currentGapSize += 
-            this.animationData.gapIncrement * this.animationData.gapIncrementMultiplier;
+            this.animationData.gapIncrement * this.animationData.gapIncrementMultiplier * deltaTime;
 
         if (this.animationData.currentGapSize >= this.animationData.maxGapSize) {
             this.animationData.gapIncrementMultiplier = -1;
@@ -113,26 +105,42 @@ class Character {
     }
 }
 
-function gameLoop() {
+const drawAllCollectibles = (collectibles) => {
+    collectibles.forEach(collectible => collectible.draw())
+}
+
+const checkAllCollisions = (character, collectibles) => {
+    collectibles.forEach(collectible => collectible.collision(character))
+}
+
+const spawnCollectible = () => {
+    let x = Math.random() * (canvas.width - 25);
+    let y = Math.random() * (canvas.height - 25);
+    collectibles.push(new Collectibles(x, y));
+}
+
+function gameLoop(totalTime) {
+    deltaTime = (totalTime - previousTime) / 1000;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    drawAllCollectibles(collectibles);
+    packMan.draw();
 
 
     packMan.move();
-    packMan.draw();
+    checkAllCollisions(packMan, collectibles);
 
-    point_one.draw(packMan);
-    point_one.collision(packMan);
 
-    point_two.collision(packMan);
-    point_two.draw(packMan);
-
+    previousTime = totalTime;
     requestAnimationFrame(gameLoop);
 }
 
 const packMan = new Character(100, 400)
-const point_one = new Collectibles(canvas.width / 2 - 100, canvas.height / 2);
-const point_two = new Collectibles(canvas.width / 2 + 100, canvas.height / 2);
+
+const collectibles = [];
+
+setInterval(spawnCollectible, 2000);
+
 requestAnimationFrame(gameLoop);
 
 document.addEventListener("keydown", (event) => {
