@@ -2,7 +2,7 @@ const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
 let deltaTime = 0;
-let previousTime = 0;
+let previousTotalTime = 0;
 
 let image;
 
@@ -72,21 +72,33 @@ class Character {
                 break;
         }
 
-        if (this.x < 0) {    
-            this.x = canvas.width - this.width;
+        if (this.x + this.width < 0) {    
+            this.x = canvas.width;
         }
-        else if (this.y < 0) {
+        else if (this.y + this.height < 0) {
             this.y = canvas.height - this.height;
         }
-        else if (this.x + this.width > canvas.width) {
-            this.x = 0;
+        else if (this.x > canvas.width) {
+            this.x = -this.width;
         }
-        else if (this.y + this.height > canvas.height) {
-            this.y = 0;
+        else if (this.y > canvas.height) {
+            this.y = -this.height;
         }
     }
 
-    draw() {
+    draw(deltaTime) {
+        this.animationData.currentSpriteElapsedTime += deltaTime;
+
+        if (this.animationData.currentSpriteElapsedTime >= this.animationData.timePerSprite) { 
+            this.animationData.currentSpriteIndex++;
+
+            if (this.animationData.currentSpriteIndex >= this.animationData.animationSprites.length) {
+                this.animationData.currentSpriteIndex = 0;
+            }
+
+            this.animationData.currentSpriteElapsedTime = 0;
+        }
+
         ctx.drawImage(this.animationData.animationSprites[this.animationData.currentSpriteIndex], this.x, this.y, this.width, this.height);
     }
 
@@ -124,23 +136,19 @@ const spawnCollectible = () => {
 }
 
 function gameLoop(totalTime) {
-    deltaTime = (totalTime - previousTime) / 1000;
+    deltaTime = (totalTime - previousTotalTime) / 1000;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     drawAllCollectibles(collectibles);
-    packMan.draw();
+    packMan.draw(deltaTime);
 
 
     packMan.move();
     checkAllCollisions(packMan, collectibles);
 
 
-    previousTime = totalTime;
+    previousTotalTime = totalTime;
 
-    packMan.animationData.currentSpriteIndex++;
-    if (packMan.animationData.currentSpriteIndex >= packMan.animationData.animationSprites.length) {
-        packMan.animationData.currentSpriteIndex = 0;
-    }
     requestAnimationFrame(gameLoop);
 }
 
