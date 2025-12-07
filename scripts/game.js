@@ -11,7 +11,7 @@ let image;
 
 
 function gameLoop(totalTime) {
-    global.deltaTime = (global.totalTime - global.previousTotalTime) / 1000;
+    global.deltaTime = (totalTime - global.previousTotalTime) / 1000;
     global.ctx.clearRect(0, 0, global.canvas.width, global.canvas.height);
     
     drawAllCollectibles(collectibles);
@@ -22,7 +22,7 @@ function gameLoop(totalTime) {
     checkAllCollisions(packMan, collectibles);
 
 
-    global.previousTotalTime = global.totalTime;
+    global.previousTotalTime = totalTime;
 
     requestAnimationFrame(gameLoop);
 }

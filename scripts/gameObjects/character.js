@@ -12,6 +12,7 @@ class Character {
             speed: 500,
             speedMultiplier: 1,
             direction: "right",
+            angle: 0,
         };
 
         this.animationData = {
@@ -66,7 +67,20 @@ class Character {
             this.animationData.currentSpriteElapsedTime = 0;
         }
 
-        global.ctx.drawImage(this.animationData.animationSprites[this.animationData.currentSpriteIndex], this.x, this.y, this.width, this.height);
+        switch (this.moveData.direction) {
+            case "right": this.angle = 0; break;
+            case "left":  this.angle = Math.PI; break;
+            case "up":    this.angle = -Math.PI / 2; break;
+            case "down":  this.angle = Math.PI / 2; break;
+        }
+
+        global.ctx.save();
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        global.ctx.translate(cx, cy);
+        global.ctx.rotate(this.angle);
+        global.ctx.drawImage(this.animationData.animationSprites[this.animationData.currentSpriteIndex], -this.width / 2, -this.height / 2, this.width, this.height);
+        global.ctx.restore();
     }
 
     loadImages(){
