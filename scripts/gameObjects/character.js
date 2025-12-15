@@ -1,25 +1,18 @@
 import { global } from "../global.js";
+import { GameObject } from "./gameObject.js";
 
-class Character {
-    constructor(x = 0, y = 0, width = 80, height = 80)
+class Character extends GameObject {
+    constructor(x = 0, y = 0, width = 80, height = 80, pathToImages = [])
     {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        super(x, y, width, height);
+
+        this.name = "character";
 
         this.moveData = {
             speed: 500,
             speedMultiplier: 1,
             direction: "right",
             angle: 0,
-        };
-
-        this.animationData = {
-            animationSprites: [],
-            timePerSprite: 0.1,
-            currentSpriteElapsedTime: 0,
-            currentSpriteIndex: 0,
         };
     }
 
@@ -55,17 +48,8 @@ class Character {
     }
 
     draw() {
-        this.animationData.currentSpriteElapsedTime += global.deltaTime;
 
-        if (this.animationData.currentSpriteElapsedTime >= this.animationData.timePerSprite) { 
-            this.animationData.currentSpriteIndex++;
-
-            if (this.animationData.currentSpriteIndex >= this.animationData.animationSprites.length) {
-                this.animationData.currentSpriteIndex = 0;
-            }
-
-            this.animationData.currentSpriteElapsedTime = 0;
-        }
+        this.nextAnimationSprite();
 
         switch (this.moveData.direction) {
             case "right": this.angle = 0; break;

@@ -3,6 +3,7 @@ const global = {
     ctx: canvas.getContext("2d"),
     deltaTime: 0,
     previousTotalTime: 0,
+    allGameObjects: [],
 }
 
 export { global };

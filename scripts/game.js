@@ -1,10 +1,9 @@
 import { global } from "./global.js";
 import { Character } from "./gameObjects/character.js";
 import { 
-    drawAllCollectibles, 
-    checkAllCollisions, 
-    spawnCollectible 
+    Collectible,
 } from "./gameObjects/collectible.js";
+import { Wall } from "./gameObjects/wall.js";
 
 
 let image;
@@ -13,24 +12,31 @@ let image;
 function gameLoop(totalTime) {
     global.deltaTime = (totalTime - global.previousTotalTime) / 1000;
     global.ctx.clearRect(0, 0, global.canvas.width, global.canvas.height);
+
+    wall.draw();
     
-    drawAllCollectibles(collectibles);
+    candy.draw();
     packMan.draw(global.deltaTime);
 
 
     packMan.move();
-    checkAllCollisions(packMan, collectibles);
-
-
+        
     global.previousTotalTime = totalTime;
 
     requestAnimationFrame(gameLoop);
 }
 
-const packMan = new Character(100, 400)
-const collectibles = [];
+// const collectibles = [];
 
-setInterval(() => spawnCollectible(collectibles, global.canvas), 2000);
+// setInterval(() => spawnCollectible(collectibles, global.canvas), 2000);
+
+const packMan = new Character(100, 400)
+const candy = new Collectible(200, 200, 50, 50, ["../images/candy.png"]);
+const wall = new Wall(300, 300, 100, 100, ["../images/wall.jpg"]);
+
+global.allGameObjects.push(candy);
+global.allGameObjects.push(wall);
+global.allGameObjects.push(packMan);
 
 packMan.loadImages();
 requestAnimationFrame(gameLoop);
