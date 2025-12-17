@@ -46,14 +46,6 @@ class GameObject {
         return newArr;
     }
 
-    detectCollision(obj) {
-        if ((this.x + this.width > obj.x && this.x < obj.x + obj.width) && 
-        this.y + this.height > obj.y && this.y < obj.y + obj.height) {
-            return true;
-        }
-        return false;
-    }
-
     static drawAll(list = null) {
         const drawList = list ?? global.allGameObjects;
 

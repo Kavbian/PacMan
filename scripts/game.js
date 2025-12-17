@@ -4,6 +4,7 @@ import { Collectible } from "./gameObjects/collectible.js";
 import { Wall } from "./gameObjects/wall.js";
 import { GameObject } from "./gameObjects/gameObject.js"
 import { Map } from "./gameObjects/map.js"
+import { Enemy } from "./gameObjects/enemy.js";
 
 
 function gameLoop(totalTime) {
@@ -15,6 +16,9 @@ function gameLoop(totalTime) {
     
     packMan.move();
     packMan.checkAllCollisions();
+
+    enemy.move();
+    enemy.checkAllCollisions();
         
     global.previousTotalTime = totalTime;
 
@@ -49,6 +53,18 @@ const packMan = new Character({
       "./images/PacMan2.png"
     ]
 });
+
+const enemy = new Enemy({
+    x: 81,
+    y: 85,
+    width: characterSize,
+    height: characterSize,
+    pathToImages: ["../images/RedGhostRight.png", ],
+})
+
+console.log(enemy)
+
+global.allGameObjects.push(enemy);
 
 global.allGameObjects.push(packMan);
 

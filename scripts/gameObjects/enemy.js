@@ -1,33 +1,60 @@
-import { GameObject } from "./gameObject";
+import { MovingObject } from "./movingObject.js";
 
-class Enemy extends GameObject {
+class Enemy extends MovingObject {
     constructor({ x = 0, y = 0, width = 80, height = 80, pathToImages = [] } = {}) {
-        super(x, y, width, height, pathToImages);
+        super({x, y, width, height, pathToImages});
         this.name = "enemy";
 
         this.previousX = x;
         this.previousY = y;
 
         this.moveData = {
-            speed: 300,
-            speedMultiplier: 1,
-            direction: "right",
+            ...this.moveData,
+            speed: 1,
             previousDirection: "right",
-            bufferedDirection: null,
-            angle: 0,
-            moving: true,
         };
+
+        this.directions = ["right", "left", "up", "down"];
     }
 
     collisionInteraction(obj) {
-        switch (obj.name) {
-            case "wall":
-                this.moveData.moving = false;
+        super.collisionInteraction(obj);
 
-                this.x = this.previousX;
-                this.y = this.previousY;
+        const possibleDirections = [];
 
-                break;
+        for (const direction of this.directions) {
+            if (!this.willCollideWith(direction, 8) && 
+            direction !== this.moveData.direction) {
+                possibleDirections.push(direction);
+            }
+        }
+
+        
+        if(possibleDirections) {
+            const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+            
+            this.moveData.direction = possibleDirections[randomIndex];
+            this.moveData.moving = true;
+        }
+
+
+        console.log(this.x, this.y, "changed direction to", this.moveData.direction);
+        console.log(obj.x, obj.y);
+        console.log("possible directions:", possibleDirections);
+    }
+
+    getOpositeDirection(direction) {
+        switch (direction) {
+            case "right":
+                return "left";
+            case "left":
+                return "right";
+            case "up":
+                return "down";
+            case "down":
+                return "up";
         }
     }
 }
+
+export { Enemy };

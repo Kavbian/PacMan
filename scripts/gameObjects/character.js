@@ -12,17 +12,11 @@ class Character extends MovingObject {
             previousDirection: "right",
             bufferedDirection: null,
             angle: 0,
-            moving: true,
         };
     }
 
     move() {
         this.tryApplyBufferedDirection();
-
-        if (!this.moveData.moving) return;
-
-        this.previousX = this.x;
-        this.previousY = this.y;
 
         super.move();
     }
@@ -34,6 +28,7 @@ class Character extends MovingObject {
 
                 super.collisionInteraction(obj);
 
+                console.log("collided with wall at", this.x, this.y);
                 break;
             
             case "collectible":
@@ -90,30 +85,6 @@ class Character extends MovingObject {
         global.ctx.drawImage(this.animationData.animationSprites[this.animationData.currentSpriteIndex], -this.width / 2, -this.height / 2, this.width, this.height);
         global.ctx.restore();
     }
-
-    willCollideWith(dir, step = this.width * 0.5) {
-        let nextX = this.x;
-        let nextY = this.y;
-
-        switch (dir) {
-          case "right": nextX += step; break;
-          case "left":  nextX -= step; break;
-          case "up":    nextY -= step; break;
-          case "down":  nextY += step; break;
-        }
-    
-        for (const obj of global.allGameObjects) {
-          if (obj === this) continue;
-          if (obj.name !== "wall") continue;
-
-          if ((nextX + this.width > obj.x && nextX < obj.x + obj.width) && 
-             nextY + this.height > obj.y && nextY < obj.y + obj.height) {
-                return true;
-          }
-        }
-
-        return false;
-      }
 }
 
 export { Character };
