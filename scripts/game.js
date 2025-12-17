@@ -1,8 +1,6 @@
 import { global } from "./global.js";
 import { Character } from "./gameObjects/character.js";
-import { 
-    Collectible,
-} from "./gameObjects/collectible.js";
+import { Collectible } from "./gameObjects/collectible.js";
 import { Wall } from "./gameObjects/wall.js";
 import { GameObject } from "./gameObjects/gameObject.js"
 import { Map } from "./gameObjects/map.js"
@@ -20,13 +18,25 @@ function gameLoop(totalTime) {
         
     global.previousTotalTime = totalTime;
 
+    const hasCollectibles = global.allGameObjects.some(
+        o => o instanceof Collectible
+    );
+
+    if (!hasCollectibles) {
+      global.victoryEl.style.display = "flex";
+      global.canvas.style.filter = "blur(6px)";
+    }
+
     requestAnimationFrame(gameLoop);
 }
 
-const map = new Map(["../images/wall.jpg"]);
+const map = new Map(
+    ["../images/wall.jpg"],
+    ["../images/candy.png"],
+);
 map.buildMap();
 
-const characterSize = map.wallSize * 0.90;
+const characterSize = map.elementSize * 0.90;
 
 const packMan = new Character({
   x: 100,
@@ -41,10 +51,6 @@ const packMan = new Character({
 });
 
 global.allGameObjects.push(packMan);
-
-console.log(map.wallSize)
-console.log(map.canvaSideSize)
-console.log(global.allGameObjects)
 
 requestAnimationFrame(gameLoop);
 
@@ -64,6 +70,11 @@ document.addEventListener("keydown", (event) => {
 
         case "ArrowDown":
             packMan.setBufferedDirection("down");
+            break;
+        case "q":
+            global.allGameObjects = global.allGameObjects.filter(
+                o => !(o instanceof Collectible)
+            );
             break;
     }
     

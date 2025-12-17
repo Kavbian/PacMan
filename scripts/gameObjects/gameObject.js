@@ -56,7 +56,15 @@ class GameObject {
 
     static drawAll(list = null) {
         const drawList = list ?? global.allGameObjects;
-        for (const obj of drawList) obj.draw();
+
+        for (const obj of drawList) {
+            try {
+                obj.draw();
+            } catch (e) {
+                console.log(e);
+                console.log(obj);
+            }
+        }
     }
 }
 

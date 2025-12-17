@@ -1,8 +1,11 @@
 import { Wall } from "./wall.js";
 import { global } from "../global.js";
+import { Collectible } from "./collectible.js";
 
 class Map {
-    constructor(wallImage,
+    constructor(
+        wallImage,
+        collectibleImage,
         mapInfo = [
         [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -25,32 +28,41 @@ class Map {
 
         this.canvaSideSize = Math.min(global.canvas.width, global.canvas.height);
 
-        this.wallSize = Math.floor(this.canvaSideSize / this.size)
+        this.elementSize = Math.floor(this.canvaSideSize / this.size)
 
         this.imagePath = {
             wall: wallImage,
+            collectible: collectibleImage,
         }
     }
 
     buildMap() {
-        let wallY = this.y;
+        let elSpawnPositionY = this.y;
         for (const row of this.mapInfo) {
-            let wallX = this.x;
+            let elSpawnPositionX = this.x;
             for (const el of row) {
                 if (el != 0){
                     global.allGameObjects.push(new Wall(
-                        wallX, 
-                        wallY, 
-                        this.wallSize,
-                        this.wallSize,
+                        elSpawnPositionX, 
+                        elSpawnPositionY, 
+                        this.elementSize,
+                        this.elementSize,
                         this.imagePath.wall,
                     ))
                 }
+                else {
+                    global.allGameObjects.push(new Collectible(
+                        elSpawnPositionX, 
+                        elSpawnPositionY, 
+                        this.elementSize,
+                        this.elementSize,
+                        this.imagePath.collectible,
+                    ))
+                }
 
-
-                wallX += this.wallSize;
+                elSpawnPositionX += this.elementSize;
             }
-            wallY += this.wallSize;
+            elSpawnPositionY += this.elementSize;
         }
     }
 }

@@ -5,11 +5,14 @@
   <title>Hello, world!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
-  <link rel="stylesheet" type="text/css" href="./css/style.css" />
+  <link rel="stylesheet" type="text/css" href="./style.css" />
   <link rel="icon" href="favicon.png">
 </head>
 <body>
-  <canvas id="canvas" width="800" height="800" style="border-style: solid;"></canvas>
+  <div class="canvas-wrapper">
+    <canvas id="canvas" width="800" height="800" style="border-style: solid;"></canvas>
+    <div class="victory">victory</div>
+  </div>
   <script type="module" src="./scripts/game.js"></script>
 </body>
 </html>
