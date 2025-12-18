@@ -14,11 +14,11 @@ function gameLoop(totalTime) {
     GameObject.drawAll(global.allGameObjects)
     
     
-    packMan.move();
     packMan.checkAllCollisions();
+    packMan.move();
 
-    enemy.move();
     enemy.checkAllCollisions();
+    enemy.move();
         
     global.previousTotalTime = totalTime;
 

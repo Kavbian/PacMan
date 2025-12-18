@@ -18,6 +18,7 @@ class MovingObject extends GameObject {
     }
 
     collisionInteraction(obj) {
+        console.log(obj)
         switch (obj.name) {
             case "wall":
                 this.moveData.moving = false;
@@ -78,10 +79,6 @@ class MovingObject extends GameObject {
     detectCollision(obj) {
         if ((this.x + this.width > obj.x && this.x < obj.x + obj.width) && 
         this.y + this.height > obj.y && this.y < obj.y + obj.height) {
-            console.log("This left upper corner:", this.x, this.y, "object left upper corner:", obj.x, obj.y);
-            console.log("This right upper corner:", this.x + this.width, this.y, "object right upper corner:", obj.x + obj.width, obj.y);
-            console.log("This right bottom corner:", this.x + this.width, this.y + this.height, "object right bottom corner:", obj.x + obj.width, obj.y + obj.height);
-            console.log("This left bottom corner:", this.x, this.y + this.height, "object left bottom corner:", obj.x, obj.y + obj.height);
 
             return true;
         }

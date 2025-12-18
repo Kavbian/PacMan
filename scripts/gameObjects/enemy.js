@@ -10,7 +10,6 @@ class Enemy extends MovingObject {
 
         this.moveData = {
             ...this.moveData,
-            speed: 1,
             previousDirection: "right",
         };
 
@@ -20,27 +19,34 @@ class Enemy extends MovingObject {
     collisionInteraction(obj) {
         super.collisionInteraction(obj);
 
-        const possibleDirections = [];
-
-        for (const direction of this.directions) {
-            if (!this.willCollideWith(direction, 8) && 
-            direction !== this.moveData.direction) {
-                possibleDirections.push(direction);
-            }
-        }
-
+        switch (obj.name) {
+            case "wall":
+                const possibleDirections = [];
+                
+                for (const direction of this.directions) {
+                    if (!this.willCollideWith(direction, 8) && 
+                    direction !== this.moveData.direction) {
+                        possibleDirections.push(direction);
+                    }
+                }
         
-        if(possibleDirections) {
-            const randomIndex = Math.floor(Math.random() * possibleDirections.length);
-            
-            this.moveData.direction = possibleDirections[randomIndex];
-            this.moveData.moving = true;
+                
+                if(possibleDirections) {
+                    const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+                    
+                    this.moveData.direction = possibleDirections[randomIndex];
+                    this.moveData.moving = true;
+                }
+        
+        
+                console.log(this.x, this.y, "changed direction to", this.moveData.direction);
+                console.log(obj.x, obj.y);
+                console.log("possible directions:", possibleDirections);
+                console.log("previous position", this.previousX, this.previousY)
+                break;
         }
 
 
-        console.log(this.x, this.y, "changed direction to", this.moveData.direction);
-        console.log(obj.x, obj.y);
-        console.log("possible directions:", possibleDirections);
     }
 
     getOpositeDirection(direction) {
