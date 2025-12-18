@@ -42,22 +42,22 @@ class Map {
             let elSpawnPositionX = this.x;
             for (const el of row) {
                 if (el != 0){
-                    global.allGameObjects.push(new Wall(
-                        elSpawnPositionX, 
-                        elSpawnPositionY, 
-                        this.elementSize,
-                        this.elementSize,
-                        this.imagePath.wall,
-                    ))
+                    global.allGameObjects.push(new Wall({
+                        x: elSpawnPositionX, 
+                        y: elSpawnPositionY, 
+                        width: this.elementSize,
+                        height: this.elementSize,
+                        pathToImages: this.imagePath.wall,
+                    }))
                 }
                 else {
-                    global.allGameObjects.push(new Collectible(
-                        elSpawnPositionX, 
-                        elSpawnPositionY, 
-                        this.elementSize,
-                        this.elementSize,
-                        this.imagePath.collectible,
-                    ))
+                    global.allGameObjects.push(new Collectible({
+                        x: elSpawnPositionX, 
+                        y: elSpawnPositionY, 
+                        width: this.elementSize,
+                        height: this.elementSize,
+                        pathToImages: this.imagePath.collectible,
+                    }))
                 }
 
                 elSpawnPositionX += this.elementSize;

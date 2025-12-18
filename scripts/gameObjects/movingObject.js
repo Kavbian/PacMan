@@ -3,7 +3,7 @@ import { global } from "../global.js";
 
 class MovingObject extends GameObject {
     constructor({ x = 0, y = 0, width = 80, height = 80, pathToImages = [] } = {}) {
-        super(x, y, width, height, pathToImages);
+        super({x, y, width, height, pathToImages});
         this.name = "movingObject";
 
         this.previousX = x;
@@ -18,7 +18,6 @@ class MovingObject extends GameObject {
     }
 
     collisionInteraction(obj) {
-        console.log(obj)
         switch (obj.name) {
             case "wall":
                 this.moveData.moving = false;

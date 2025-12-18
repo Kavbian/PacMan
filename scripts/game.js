@@ -17,6 +17,9 @@ function gameLoop(totalTime) {
     packMan.checkAllCollisions();
     packMan.move();
 
+    bluePackMan.checkAllCollisions();
+    bluePackMan.move();
+    
     enemy.checkAllCollisions();
     enemy.move();
         
@@ -47,12 +50,32 @@ const packMan = new Character({
   y: 400,
   width: characterSize,
   height: characterSize,
-  pathToImages: [
-      "./images/PacMan0.png",
-      "./images/PacMan1.png",
-      "./images/PacMan2.png"
-    ]
+//   pathToImages: [
+//       "./images/PacMan0.png",
+//       "./images/PacMan1.png",
+//       "./images/PacMan2.png"
+//     ]
+    pathToImages: ["./images/spritesheet.png"],
 });
+
+packMan.useImagesAsSpritesheet(3, 4);
+
+const bluePackMan = new Character({
+    x: 80,
+    y: 720,
+    width: characterSize,
+    height: characterSize,
+    // pathToImages: [
+    //     "./images/PacManBlue0.png",
+    //     "./images/PacManBlue1.png",
+    //     "./images/PacManBlue2.png"
+    //   ],
+    pathToImages: ["./images/spritesheetBlue.png"],
+})
+
+global.allGameObjects.push(bluePackMan);
+
+bluePackMan.useImagesAsSpritesheet(3, 4);
 
 const enemy = new Enemy({
     x: 81,
@@ -91,6 +114,25 @@ document.addEventListener("keydown", (event) => {
             global.allGameObjects = global.allGameObjects.filter(
                 o => !(o instanceof Collectible)
             );
+            break;
+        case "d":
+            bluePackMan.setBufferedDirection("right");
+            bluePackMan.setAnimationSprite(0, 2);
+            break;
+        
+        case "a":
+            bluePackMan.setAnimationSprite(6, 8);
+            bluePackMan.setBufferedDirection("left");
+            break;
+
+        case "w":
+            bluePackMan.setAnimationSprite(9, 11);
+            bluePackMan.setBufferedDirection("up");
+            break;
+
+        case "s":
+            bluePackMan.setAnimationSprite(3, 5);
+            bluePackMan.setBufferedDirection("down");
             break;
     }
     

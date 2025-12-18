@@ -14,6 +14,7 @@ class Enemy extends MovingObject {
         };
 
         this.directions = ["right", "left", "up", "down"];
+        this.possibleDirections = [];
     }
 
     collisionInteraction(obj) {
@@ -21,27 +22,27 @@ class Enemy extends MovingObject {
 
         switch (obj.name) {
             case "wall":
-                const possibleDirections = [];
-                
+                this.possibleDirections = [];
+
                 for (const direction of this.directions) {
                     if (!this.willCollideWith(direction, 8) && 
                     direction !== this.moveData.direction) {
-                        possibleDirections.push(direction);
+                        this.possibleDirections.push(direction);
                     }
                 }
         
                 
-                if(possibleDirections) {
-                    const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+                if(this.possibleDirections) {
+                    const randomIndex = Math.floor(Math.random() * this.possibleDirections.length);
                     
-                    this.moveData.direction = possibleDirections[randomIndex];
+                    this.moveData.direction = this.possibleDirections[randomIndex];
                     this.moveData.moving = true;
                 }
         
         
                 console.log(this.x, this.y, "changed direction to", this.moveData.direction);
                 console.log(obj.x, obj.y);
-                console.log("possible directions:", possibleDirections);
+                console.log("possible directions:", this.possibleDirections);
                 console.log("previous position", this.previousX, this.previousY)
                 break;
         }

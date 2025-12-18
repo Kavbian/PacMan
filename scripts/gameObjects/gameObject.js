@@ -1,7 +1,7 @@
 import { global } from "../global.js";
 
 class GameObject {
-    constructor(x = 0, y = 0, width = 100, height = 100, pathToImages = [])
+    constructor({x = 0, y = 0, width = 100, height = 100, pathToImages = [], hitBoxReduction = 0} = {})
     {
         this.x = x;
         this.y = y;
@@ -13,7 +13,18 @@ class GameObject {
             timePerSprite: 0.1,
             currentSpriteElapsedTime: 0,
             currentSpriteIndex: 0,
+            firstSpriteIndex: 0,
+            lastSpriteIndex: 0,
         };
+
+        this.hitBoxReduction = hitBoxReduction;
+
+        this.hitBox = {
+            x: x - this.hitBoxReduction,
+            y: y - this.hitBoxReduction,
+            width: width - this.hitBoxReduction * 2,
+            height: height - this.hitBoxReduction * 2,
+        }
     }
 
     nextAnimationSprite() {
@@ -22,12 +33,18 @@ class GameObject {
         if (this.animationData.currentSpriteElapsedTime >= this.animationData.timePerSprite) { 
             this.animationData.currentSpriteIndex++;
     
-            if (this.animationData.currentSpriteIndex >= this.animationData.animationSprites.length) {
-                this.animationData.currentSpriteIndex = 0;
+            if (this.animationData.currentSpriteIndex >= this.animationData.lastSpriteIndex) {
+                this.animationData.currentSpriteIndex = this.animationData.firstSpriteIndex;
             }
     
             this.animationData.currentSpriteElapsedTime = 0;
         }
+    }
+
+    setAnimationSprite(firstSpriteIndex, lastSpriteIndex) {
+        this.animationData.firstSpriteIndex = firstSpriteIndex;
+        this.animationData.currentSpriteIndex = firstSpriteIndex;
+        this.animationData.lastSpriteIndex = lastSpriteIndex;
     }
 
     draw() {
