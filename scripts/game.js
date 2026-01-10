@@ -5,23 +5,19 @@ import { Wall } from "./gameObjects/wall.js";
 import { GameObject } from "./gameObjects/gameObject.js"
 import { Map } from "./gameObjects/map.js"
 import { Enemy } from "./gameObjects/enemy.js";
-
+import { ScoreCounter } from "./gameObjects/scoreCounter.js";
+import { MovingObject } from "./gameObjects/movingObject.js";
+import { LifeCounter } from "./gameObjects/lifeCounter.js";
+import { GameOverScreen } from "./gameObjects/gameOverScreen.js";
+import { GameWonScreen } from "./gameObjects/gameWonScreen.js";
 
 function gameLoop(totalTime) {
     global.deltaTime = (totalTime - global.previousTotalTime) / 1000;
     global.ctx.clearRect(0, 0, global.canvas.width, global.canvas.height);
 
     GameObject.drawAll(global.allGameObjects)
-    
-    
-    packMan.checkAllCollisions();
-    packMan.move();
-
-    bluePackMan.checkAllCollisions();
-    bluePackMan.move();
-    
-    enemy.checkAllCollisions();
-    enemy.move();
+    MovingObject.checkAllCollisionsArray();
+    MovingObject.moveArray();
         
     global.previousTotalTime = totalTime;
 
@@ -29,114 +25,137 @@ function gameLoop(totalTime) {
         o => o instanceof Collectible
     );
 
-    if (!hasCollectibles) {
-      global.victoryEl.style.display = "flex";
-      global.canvas.style.filter = "blur(6px)";
-    }
+    // if (!hasCollectibles) {
+    //   global.victoryEl.style.display = "flex";
+    //   global.canvas.style.filter = "blur(6px)";
+    // }
 
     requestAnimationFrame(gameLoop);
 }
 
-const map = new Map(
-    ["../images/wall.jpg"],
-    ["../images/candy.png"],
-);
-map.buildMap();
+function initializeGame() {
+    const map = new Map(
+        ["../images/wall.jpg"],
+        ["../images/candy.png"],
+    )
+    
+    global.map = map;
+    
+    const characterSize = global.map.elementSize * 0.9;
+    global.characterSize = characterSize;
+    
+    const packManYellow = new Character({
+      x: 90,
+      y: 400,
+      width: global.characterSize,
+      height: global.characterSize,
+      pathToImages: ["./images/spritesheet.png"],
+    });
+    
+    const packManBlue = new Character({
+        x: 80,
+        y: 720,
+        width: global.characterSize,
+        height: global.characterSize,
+        pathToImages: ["./images/spritesheetBlue.png"],
+    });
+    
+    const scoreCounterYellow = new ScoreCounter({color: "yellow"});
+    scoreCounterYellow.linkCharacter(packManYellow);
+    
+    const scoreCounterBlue = new ScoreCounter({color: "blue"});
+    scoreCounterBlue.linkCharacter(packManBlue);
 
-const characterSize = map.elementSize * 0.90;
+    const lifeCounterYellow = new LifeCounter({color: "yellow"});
+    lifeCounterYellow.linkCharacter(packManYellow);
 
-const packMan = new Character({
-  x: 100,
-  y: 400,
-  width: characterSize,
-  height: characterSize,
-//   pathToImages: [
-//       "./images/PacMan0.png",
-//       "./images/PacMan1.png",
-//       "./images/PacMan2.png"
-//     ]
-    pathToImages: ["./images/spritesheet.png"],
-});
+    const lifeCounterBlue = new LifeCounter({color: "blue"});
+    lifeCounterBlue.linkCharacter(packManBlue);
+    
+    global.map.scoreCounter1 = scoreCounterYellow;
+    global.map.scoreCounter2 = scoreCounterBlue;
 
-packMan.useImagesAsSpritesheet(3, 4);
+    global.map.lifeCounter1 = lifeCounterYellow;
+    global.map.lifeCounter2 = lifeCounterBlue;
+    
+    console.log(global.map.scoreCounter1);
+    console.log(global.map.scoreCounter2);
+    
+    global.packManYellow = packManYellow;
+    global.packManBlue = packManBlue;
+    
+    global.packManYellow.useImagesAsSpritesheet(3, 4);
+    
+    global.packManBlue.useImagesAsSpritesheet(3, 4);
+    
+    global.map.buildMap();
 
-const bluePackMan = new Character({
-    x: 80,
-    y: 720,
-    width: characterSize,
-    height: characterSize,
-    // pathToImages: [
-    //     "./images/PacManBlue0.png",
-    //     "./images/PacManBlue1.png",
-    //     "./images/PacManBlue2.png"
-    //   ],
-    pathToImages: ["./images/spritesheetBlue.png"],
-})
+    
+    global.allMovingObjects.push(packManBlue, packManYellow);
+    global.allGameObjects.push(...global.allMovingObjects, global.packManYellow, global.packManBlue);
 
-global.allGameObjects.push(bluePackMan);
+    global.allGameObjects.push(new GameOverScreen());
+    global.allGameObjects.push(new GameWonScreen());
+}    
 
-bluePackMan.useImagesAsSpritesheet(3, 4);
 
-const enemy = new Enemy({
-    x: 81,
-    y: 85,
-    width: characterSize,
-    height: characterSize,
-    pathToImages: ["../images/RedGhostRight.png", ],
-})
 
-console.log(enemy)
-
-global.allGameObjects.push(enemy);
-
-global.allGameObjects.push(packMan);
-
+initializeGame();
 requestAnimationFrame(gameLoop);
+
+
 
 document.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "ArrowRight":
-            packMan.setBufferedDirection("right");
+            global.packManYellow.setBufferedDirection("right");
+            global.packManYellow.setAnimationSprite(0, 2);
             break;
         
         case "ArrowLeft":
-            packMan.setBufferedDirection("left");
+            global.packManYellow.setBufferedDirection("left");
+            global.packManYellow.setAnimationSprite(6, 8);
             break;
 
         case "ArrowUp":
-            packMan.setBufferedDirection("up");
+            global.packManYellow.setBufferedDirection("up");
+            global.packManYellow.setAnimationSprite(9, 11);
             break;
 
         case "ArrowDown":
-            packMan.setBufferedDirection("down");
+            global.packManYellow.setBufferedDirection("down");
+            global.packManYellow.setAnimationSprite(3, 5);
             break;
         case "q":
             global.allGameObjects = global.allGameObjects.filter(
                 o => !(o instanceof Collectible)
             );
             break;
+        case "e":
+            global.packManYellow.active = false;
+            global.packManBlue.active = false;
         case "d":
-            bluePackMan.setBufferedDirection("right");
-            bluePackMan.setAnimationSprite(0, 2);
+            global.packManBlue.setBufferedDirection("right");
+            global.packManBlue.setAnimationSprite(0, 2);
             break;
         
         case "a":
-            bluePackMan.setAnimationSprite(6, 8);
-            bluePackMan.setBufferedDirection("left");
+            global.packManBlue.setAnimationSprite(6, 8);
+            global.packManBlue.setBufferedDirection("left");
             break;
 
         case "w":
-            bluePackMan.setAnimationSprite(9, 11);
-            bluePackMan.setBufferedDirection("up");
+            global.packManBlue.setAnimationSprite(9, 11);
+            global.packManBlue.setBufferedDirection("up");
             break;
 
         case "s":
-            bluePackMan.setAnimationSprite(3, 5);
-            bluePackMan.setBufferedDirection("down");
+            global.packManBlue.setAnimationSprite(3, 5);
+            global.packManBlue.setBufferedDirection("down");
             break;
     }
     
-    if(packMan.moveData.previousDirection != packMan.moveData.direction) {
-        packMan.moveData.previousDirection = packMan.moveData.direction
-    }
+    // if(packMan.moveData.previousDirection != packMan.moveData.direction) {
+    //     packMan.moveData.previousDirection = packMan.moveData.direction
+    // }
 })

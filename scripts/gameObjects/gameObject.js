@@ -25,6 +25,9 @@ class GameObject {
             width: width - this.hitBoxReduction * 2,
             height: height - this.hitBoxReduction * 2,
         }
+
+        this.visible = true;
+        this.active = true;
     }
 
     nextAnimationSprite() {
@@ -67,11 +70,13 @@ class GameObject {
         const drawList = list ?? global.allGameObjects;
 
         for (const obj of drawList) {
-            try {
-                obj.draw();
-            } catch (e) {
-                console.log(e);
-                console.log(obj);
+            if (obj.name != "crossroad"){
+                try {
+                    obj.draw();
+                } catch (e) {
+                    console.log(e);
+                    console.log(obj);
+                }
             }
         }
     }

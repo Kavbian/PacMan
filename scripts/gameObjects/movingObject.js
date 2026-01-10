@@ -6,6 +6,9 @@ class MovingObject extends GameObject {
         super({x, y, width, height, pathToImages});
         this.name = "movingObject";
 
+        this.initialPositionX = x;
+        this.initialPositionY = y;
+
         this.previousX = x;
         this.previousY = y;
 
@@ -14,22 +17,49 @@ class MovingObject extends GameObject {
             speedMultiplier: 1,
             direction: "right",
             moving: true,
+            previousDirection: "right",
+            bufferedDirection: null,
         };
     }
 
     collisionInteraction(obj) {
-        switch (obj.name) {
-            case "wall":
-                this.moveData.moving = false;
-
-                this.x = this.previousX;
-                this.y = this.previousY;
-
-                break;
+        if (this.active && obj.active){
+            switch (obj.name) {
+                case "wall":
+                    this.x = this.previousX;
+                    this.y = this.previousY;
+    
+                    break;
+            }
         }
     }
 
+    setBufferedDirection(dir) {
+        this.moveData.bufferedDirection = dir;
+        
+        if (!this.willCollideWith(dir)) {
+            this.moveData.direction = dir;
+            this.moveData.bufferedDirection = null;
+            this.moveData.moving = true;
+        }
+    }
+
+    tryApplyBufferedDirection() {
+        const d = this.moveData.bufferedDirection;
+        if (!d) return false;
+
+        if (!this.willCollideWith(d)) {
+            this.moveData.direction = d;
+            this.moveData.bufferedDirection = null;
+            this.moveData.moving = true;
+            return true;
+        }
+        return false;
+    }
+
     move() {    
+        this.tryApplyBufferedDirection();
+
         if (!this.moveData.moving) return;
 
         this.previousX = this.x;
@@ -106,6 +136,18 @@ class MovingObject extends GameObject {
         }
 
         return false;
+    }
+
+    static moveArray() {
+        for (let obj of global.allMovingObjects) {
+            obj.move();
+        }
+    }
+
+    static checkAllCollisionsArray() {
+        for (let obj of global.allMovingObjects) {
+            obj.checkAllCollisions();
+        }
     }
 }
 

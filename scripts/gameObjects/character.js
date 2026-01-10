@@ -6,66 +6,71 @@ class Character extends MovingObject {
     constructor(args = {}) {
         super(args);
         this.name = "character";
+        this.score = 0;
+        this.lifes = 3;
 
         this.moveData = {
             ...this.moveData,
-            previousDirection: "right",
-            bufferedDirection: null,
             angle: 0,
         };
-    }
 
-    move() {
-        this.tryApplyBufferedDirection();
-
-        super.move();
-    }
-
-    collisionInteraction(obj) {
-        switch (obj.name) {
-            case "wall":
-                this.moveData.moving = false;
-
-                super.collisionInteraction(obj);
-
-                console.log("collided with wall at", this.x, this.y);
-                break;
-            
-            case "collectible":
-                const indexOfCollected = global.allGameObjects.indexOf(obj);
-                global.allGameObjects.splice(indexOfCollected, 1)
-
-                break;
-
+        this.animationData = {
+            ...this.animationData,
+            timePerSprite: 0.3,
         }
     }
 
-    setBufferedDirection(dir) {
-        this.moveData.bufferedDirection = dir;
-        
-        if (!this.willCollideWith(dir)) {
-            this.moveData.direction = dir;
-            this.moveData.bufferedDirection = null;
-            this.moveData.moving = true;
+    draw() {
+        if (this.visible) {
+            super.draw();
+        }
+    }
+
+    collisionInteraction(obj) {
+        super.collisionInteraction(obj);
+        if (this.active && obj.active) {
+            switch (obj.name) {
+                case "wall":
+                    this.moveData.moving = false;
+    
+                    super.collisionInteraction(obj);
+    
+                    console.log("collided with wall at", this.x, this.y);
+                    break;
+                
+                case "collectible":
+                    this.score += 1;
+                    const indexOfCollected = global.allGameObjects.indexOf(obj);
+                    global.allGameObjects.splice(indexOfCollected, 1)
+    
+                    break;
+    
+                case "enemy":
+                    if (this.lifes == 1) {
+                        this.visible = false;
+                        this.moveData.moving = false;
+                        this.moveData.speedMultiplier = 0;
+                        this.active = false;
+                    }
+                    this.lifes--;
+                    this.x = this.initialPositionX;
+                    this.y = this.initialPositionY;
+    
+            }
         }
     }
 
     tryApplyBufferedDirection() {
-        const d = this.moveData.bufferedDirection;
-        if (!d) return false;
-        if (d === this.moveData.direction) {
+        const direction = this.moveData.direction;
+        if (this.moveData.bufferedDirection == direction) {
             this.moveData.bufferedDirection = null;
             return false;
         }
 
-        if (!this.willCollideWith(d)) {
-            this.moveData.direction = d;
-            this.moveData.bufferedDirection = null;
-            this.moveData.moving = true;
-            return true;
-        }
-        return false;
+        super.tryApplyBufferedDirection();
     }
+
+
 
     // draw() {
     //     this.nextAnimationSprite();

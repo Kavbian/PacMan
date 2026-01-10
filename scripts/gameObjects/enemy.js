@@ -1,4 +1,5 @@
 import { MovingObject } from "./movingObject.js";
+import { global } from "../global.js";
 
 class Enemy extends MovingObject {
     constructor({ x = 0, y = 0, width = 80, height = 80, pathToImages = [] } = {}) {
@@ -15,6 +16,8 @@ class Enemy extends MovingObject {
 
         this.directions = ["right", "left", "up", "down"];
         this.possibleDirections = [];
+        this.previousCrossroad = 0;
+        this.crossroadInteraction = 0;
     }
 
     collisionInteraction(obj) {
@@ -39,15 +42,39 @@ class Enemy extends MovingObject {
                     this.moveData.moving = true;
                 }
         
-        
-                console.log(this.x, this.y, "changed direction to", this.moveData.direction);
-                console.log(obj.x, obj.y);
-                console.log("possible directions:", this.possibleDirections);
-                console.log("previous position", this.previousX, this.previousY)
                 break;
+
+            case "crossroad":
+                if (this.previousCrossroad == 0 && this.crossroadInteraction == 1) {
+                    this.moveData.bufferedDirection = obj.randomDirection();
+                }
         }
 
 
+    }
+
+    checkAllCollisions() {
+        let crossroadAppearance = 0;
+        for (let obj of global.allGameObjects) {
+            if (obj == this) continue;
+            
+            if (this.detectCollision(obj)) {
+                if(obj.name == "crossroad") crossroadAppearance = 1;
+
+                this.collisionInteraction(obj);
+            }
+
+            
+        }
+
+        if(crossroadAppearance) {
+            this.previousCrossroad = this.crossroadInteraction;
+            this.crossroadInteraction = 1;
+        }
+        else {
+            this.previousCrossroad = this.crossroadInteraction;
+            this.crossroadInteraction = 0;
+        }
     }
 
     getOpositeDirection(direction) {
