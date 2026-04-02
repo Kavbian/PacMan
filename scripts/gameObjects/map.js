@@ -233,7 +233,7 @@ class Map {
                         y: elSpawnPositionY,
                         width: global.characterSize,
                         height: global.characterSize,
-                        pathToImages: ["../images/RedGhostRight.png", ],
+                        pathToImages: ["./images/RedGhostRight.png", ],
                     })
 
                     global.allGameObjects.push(new Collectible({

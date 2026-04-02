@@ -35,8 +35,8 @@ function gameLoop(totalTime) {
 
 function initializeGame() {
     const map = new Map(
-        ["../images/wall.jpg"],
-        ["../images/candy.png"],
+        ["./images/wall.jpg"],
+        ["./images/candy.png"],
     )
     
     global.map = map;
