@@ -98,21 +98,6 @@ class Character extends MovingObject {
         const originalSprites = this.animationData.animationSprites.slice();
         this.animationData.animationSprites = Array.from({ length: allSprites }, () => new Image());
 
-        for (var i = 0; i < originalSprites.length; i++){
-            let currentImage = originalSprites[i];
-            if (currentImage.complete && currentImage.naturalWidth !== 0) {
-            // already loaded
-                loaded.call(currentImage, totalSprites * i );
-            } else {
-                currentImage.onload = function () {
-                    let spriteIndex = totalSprites * i;
-                    return function () {
-                        loaded.call(this, spriteIndex);
-                    };
-                }();
-            }
-        }
-        
         let loaded = function (spriteIndexOffset) {
             const spritesheetWidth = this.width;
             const spritesheetHeight = this.height;
@@ -148,6 +133,22 @@ class Character extends MovingObject {
                 }
             }
         };
+        
+        for (var i = 0; i < originalSprites.length; i++){
+            let currentImage = originalSprites[i];
+            if (currentImage.complete && currentImage.naturalWidth !== 0) {
+            // already loaded
+                loaded.call(currentImage, totalSprites * i );
+            } else {
+                currentImage.onload = function () {
+                    let spriteIndex = totalSprites * i;
+                    return function () {
+                        loaded.call(this, spriteIndex);
+                    };
+                }();
+            }
+        }
+        
     }
 }
 
